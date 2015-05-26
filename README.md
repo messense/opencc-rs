@@ -1,2 +1,2 @@
 # opencc-rs
-OpenCC binding for rust. [WIP]
+OpenCC binding for Rust.[WIP]

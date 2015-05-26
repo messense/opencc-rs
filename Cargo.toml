@@ -2,6 +2,12 @@
 name = "opencc"
 version = "0.1.0"
 authors = ["messense <messense@icloud.com>"]
+description = "OpenCC binding for Rust"
+repository = "https://github.com/messense/opencc-rs"
+readme = "README.md"
+keywords = ["opencc"]
+license = "MIT"
+license-file = "LICENSE"
 
 [lib]
 name = "opencc"
