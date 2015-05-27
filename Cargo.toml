@@ -6,7 +6,7 @@ description = "OpenCC binding for Rust"
 repository = "https://github.com/messense/opencc-rs"
 readme = "README.md"
 keywords = ["opencc"]
-license-file = "LICENSE"
+license = "MIT"
 
 [lib]
 name = "opencc"
