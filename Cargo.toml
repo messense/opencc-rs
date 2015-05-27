@@ -11,8 +11,5 @@ license-file = "LICENSE"
 [lib]
 name = "opencc"
 
-[[bin]]
-name = "opencc"
-
 [dependencies]
 libc = "*"

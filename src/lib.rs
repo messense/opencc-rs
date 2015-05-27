@@ -1,3 +1,32 @@
+//! OpenCC binding for Rust
+//!
+//! You should install [OpenCC 1.0.x](https://github.com/BYVoid/OpenCC) library first.
+//!
+//! Supported configurations:
+//!
+//! * `s2t.json` Simplified Chinese to Traditional Chinese
+//! * `t2s.json` Traditional Chinese to Simplified Chinese
+//! * `s2tw.json` Simplified Chinese to Traditional Chinese (Taiwan Standard)
+//! * `tw2s.json` Traditional Chinese (Taiwan Standard) to Simplified Chinese
+//! * `s2hk.json` Simplified Chinese to Traditional Chinese (Hong Kong Standard)
+//! * `hk2s.json` Traditional Chinese (Hong Kong Standard) to Simplified Chinese
+//! * `s2twp.json` Simplified Chinese to Traditional Chinese (Taiwan Standard) with Taiwanese idiom
+//! * `tw2sp.json` Traditional Chinese (Taiwan Standard) to Simplified Chinese with Mainland Chinese idiom
+//! * `t2tw.json` Traditional Chinese (OpenCC Standard) to Taiwan Standard
+//! * `t2hk.json` Traditional Chinese (OpenCC Standard) to Hong Kong Standard
+//!
+//! # Examples
+//! ```
+//! extern crate opencc;
+//!
+//! use opencc::OpenCC;
+//!
+//! fn main() {
+//!     let cc = OpenCC::new("t2s.json");
+//!     println!("{}", cc.convert("乾坤一擲"));
+//!     println!("{}", cc.convert("開放中文轉換"));
+//! }
+//! ```
 extern crate libc;
 use libc::{size_t, c_void, c_char};
 
@@ -18,6 +47,12 @@ pub struct OpenCC {
 }
 
 impl OpenCC {
+    /// Constructs a new `OpenCC`
+    ///
+    /// # Examples
+    /// ```
+    /// let cc = opencc::OpenCC::new("t2s.json");
+    /// ```
     pub fn new(config: &str) -> OpenCC {
         let _config = config.to_string();
         let config_ptr = _config.as_ptr();
@@ -29,6 +64,14 @@ impl OpenCC {
         }
     }
 
+    /// Convert a text
+    ///
+    /// # Examples
+    /// ```
+    /// let cc = opencc::OpenCC::new("t2s.json");
+    /// cc.convert("乾坤一擲");
+    /// cc.convert("開放中文轉換");
+    /// ```
     pub fn convert(&self, text: &str) -> String {
         unsafe {
             let text_ptr = text.as_ptr();
