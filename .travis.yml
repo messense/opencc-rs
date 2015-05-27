@@ -5,7 +5,7 @@ rust:
   - beta
   - nightly
 install:
-  - sudo apt-get install cmake -y
+  - sudo apt-get install cmake doxygen -y
   - git clone https://github.com/BYVoid/OpenCC.git && cd OpenCC
   - make && sudo make install
   - sudo ldconfig
