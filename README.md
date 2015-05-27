@@ -1,6 +1,7 @@
 # opencc-rs
 
 [![Build Status](https://travis-ci.org/messense/opencc-rs.svg)](https://travis-ci.org/messense/opencc-rs)
+[![Coverage Status](https://coveralls.io/repos/messense/opencc-rs/badge.svg)](https://coveralls.io/r/messense/opencc-rs)
 
 OpenCC binding for Rust.
 
