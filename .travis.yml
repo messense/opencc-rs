@@ -1,0 +1,11 @@
+sudo: required
+language: rust
+rust:
+  - 1.0.0
+  - beta
+  - nightly
+install:
+  - sudo apt-get install opencc libopencc-dev
+script:
+  - cargo build --verbose
+  - cargo test --verbose
