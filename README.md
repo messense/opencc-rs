@@ -5,6 +5,8 @@
 
 OpenCC binding for Rust.
 
+[Read the documentation](https://messense.github.io/opencc-rs).
+
 
 ## Installation
 
