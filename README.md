@@ -2,6 +2,7 @@
 
 [![Build Status](https://travis-ci.org/messense/opencc-rs.svg)](https://travis-ci.org/messense/opencc-rs)
 [![Coverage Status](https://coveralls.io/repos/messense/opencc-rs/badge.svg)](https://coveralls.io/r/messense/opencc-rs)
+[![Crates.io](https://img.shields.io/crates/v/opencc.svg)](https://crates.io/crates/opencc)
 
 OpenCC binding for Rust.
 
