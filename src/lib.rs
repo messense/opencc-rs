@@ -42,7 +42,9 @@ extern {
 }
 
 pub struct OpenCC {
+    /// Configuration file
     pub config: String,
+    _is_closed: bool,
     libopencc: *mut c_void,
 }
 
@@ -59,6 +61,7 @@ impl OpenCC {
         unsafe {
             OpenCC {
                 config: _config,
+                _is_closed: false,
                 libopencc: opencc_open(config_ptr as *const c_char),
             }
         }
@@ -73,27 +76,38 @@ impl OpenCC {
     /// cc.convert("開放中文轉換").unwrap();
     /// ```
     pub fn convert(&self, text: &str) -> Option<String> {
-        unsafe {
-            let text_ptr = text.as_ptr();
-            let c_ptr = opencc_convert_utf8(self.libopencc, text_ptr as *const c_char, text.len() as size_t);
-            if c_ptr.is_null() {
-                None
-            } else {
-                let c_str = CStr::from_ptr(c_ptr);
-                let str_buf: String = str::from_utf8(c_str.to_bytes()).unwrap().to_owned();
-                opencc_convert_utf8_free(c_ptr);
-                Some(str_buf)
+        if self._is_closed {
+            None
+        } else {
+            unsafe {
+                let text_ptr = text.as_ptr();
+                let c_ptr = opencc_convert_utf8(self.libopencc, text_ptr as *const c_char, text.len() as size_t);
+                if c_ptr.is_null() {
+                    None
+                } else {
+                    let c_str = CStr::from_ptr(c_ptr);
+                    let str_buf: String = str::from_utf8(c_str.to_bytes()).unwrap().to_owned();
+                    opencc_convert_utf8_free(c_ptr);
+                    Some(str_buf)
+                }
             }
         }
     }
 
     /// Close the underlying libopencc.
-    /// Will be called automatically when the variable gets out of scope, should not call it
-    /// directly by yourself.
-    pub fn close(&self) {
-        unsafe {
-            opencc_close(self.libopencc);
+    /// Will be called automatically when the variable gets out of scope.
+    pub fn close(&mut self) {
+        if !self._is_closed {
+            unsafe {
+                opencc_close(self.libopencc);
+            }
+            self._is_closed = true;
         }
+    }
+
+    /// Is the underlying libopencc closed
+    pub fn is_closed(&self) -> bool {
+        self._is_closed
     }
 }
 
@@ -104,9 +118,24 @@ impl Drop for OpenCC {
     }
 }
 
-#[test]
-fn test_convert() {
-    let opencc = OpenCC::new("t2s.json");
-    assert_eq!("乾坤一掷".to_string(), opencc.convert("乾坤一擲").unwrap());
-    assert_eq!("开放中文转换".to_string(), opencc.convert("開放中文轉換").unwrap());
+#[cfg(test)]
+mod tests {
+    use super::OpenCC;
+
+    #[test]
+    fn test_simple_convert() {
+        let cc = OpenCC::new("t2s.json");
+        assert_eq!("乾坤一掷".to_string(), cc.convert("乾坤一擲").unwrap());
+        assert_eq!("开放中文转换".to_string(), cc.convert("開放中文轉換").unwrap());
+    }
+
+    #[test]
+    fn test_opencc_close() {
+        let mut cc = OpenCC::new("t2s.json");
+        assert_eq!("乾坤一掷".to_string(), cc.convert("乾坤一擲").unwrap());
+        assert_eq!(false, cc.is_closed());
+        cc.close();
+        assert_eq!(true, cc.convert("開放中文轉換").is_none());
+        assert_eq!(true, cc.is_closed());
+    }
 }
