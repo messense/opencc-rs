@@ -87,7 +87,7 @@ impl OpenCC {
         }
     }
 
-    /// Close the underlaying libopencc.
+    /// Close the underlying libopencc.
     /// Will be called automatically when the variable gets out of scope, should not call it
     /// directly by yourself.
     pub fn close(&self) {
@@ -98,7 +98,7 @@ impl OpenCC {
 }
 
 impl Drop for OpenCC {
-    /// Close the underlaying libopencc when it been droped
+    /// Close the underlying libopencc when it been droped
     fn drop(&mut self) {
         self.close();
     }
