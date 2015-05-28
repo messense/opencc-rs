@@ -23,8 +23,8 @@
 //!
 //! fn main() {
 //!     let cc = OpenCC::new("t2s.json");
-//!     println!("{}", cc.convert("乾坤一擲"));
-//!     println!("{}", cc.convert("開放中文轉換"));
+//!     println!("{}", cc.convert("乾坤一擲").unwrap());
+//!     println!("{}", cc.convert("開放中文轉換").unwrap());
 //! }
 //! ```
 extern crate libc;
@@ -69,20 +69,27 @@ impl OpenCC {
     /// # Examples
     /// ```
     /// let cc = opencc::OpenCC::new("t2s.json");
-    /// cc.convert("乾坤一擲");
-    /// cc.convert("開放中文轉換");
+    /// cc.convert("乾坤一擲").unwrap();
+    /// cc.convert("開放中文轉換").unwrap();
     /// ```
-    pub fn convert(&self, text: &str) -> String {
+    pub fn convert(&self, text: &str) -> Option<String> {
         unsafe {
             let text_ptr = text.as_ptr();
             let c_ptr = opencc_convert_utf8(self.libopencc, text_ptr as *const c_char, text.len() as size_t);
-            let c_str = CStr::from_ptr(c_ptr);
-            let str_buf: String = str::from_utf8(c_str.to_bytes()).unwrap().to_owned();
-            opencc_convert_utf8_free(c_ptr);
-            str_buf
+            if c_ptr.is_null() {
+                None
+            } else {
+                let c_str = CStr::from_ptr(c_ptr);
+                let str_buf: String = str::from_utf8(c_str.to_bytes()).unwrap().to_owned();
+                opencc_convert_utf8_free(c_ptr);
+                Some(str_buf)
+            }
         }
     }
 
+    /// Close the underlaying libopencc.
+    /// Will be called automatically when the variable gets out of scope, should not call it
+    /// directly by yourself.
     pub fn close(&self) {
         unsafe {
             opencc_close(self.libopencc);
@@ -91,6 +98,7 @@ impl OpenCC {
 }
 
 impl Drop for OpenCC {
+    /// Close the underlaying libopencc when it been droped
     fn drop(&mut self) {
         self.close();
     }
@@ -99,6 +107,6 @@ impl Drop for OpenCC {
 #[test]
 fn test_convert() {
     let opencc = OpenCC::new("t2s.json");
-    assert_eq!("乾坤一掷".to_string(), opencc.convert("乾坤一擲"));
-    assert_eq!("开放中文转换".to_string(), opencc.convert("開放中文轉換"));
+    assert_eq!("乾坤一掷".to_string(), opencc.convert("乾坤一擲").unwrap());
+    assert_eq!("开放中文转换".to_string(), opencc.convert("開放中文轉換").unwrap());
 }
