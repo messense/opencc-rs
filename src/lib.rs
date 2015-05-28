@@ -39,6 +39,7 @@ extern {
     fn opencc_close(opencc: *mut c_void);
     fn opencc_convert_utf8(opencc: *mut c_void, text: *const c_char, length: size_t) -> *mut c_char;
     fn opencc_convert_utf8_free(text: *mut c_char);
+    fn opencc_error() -> *const c_char;
 }
 
 pub struct OpenCC {
@@ -109,6 +110,24 @@ impl OpenCC {
     pub fn is_closed(&self) -> bool {
         self._is_closed
     }
+
+    /// Returns the last error message
+    ///
+    /// # Safety
+    ///
+    /// Note that this function is the only one which is NOT thread-safe.
+    pub fn last_error() -> Option<String> {
+        unsafe {
+            let error_ptr = opencc_error();
+            if error_ptr.is_null() {
+                None
+            } else {
+                let c_str = CStr::from_ptr(error_ptr);
+                let str_buf: String = str::from_utf8(c_str.to_bytes()).unwrap().to_owned();
+                Some(str_buf)
+            }
+        }
+    }
 }
 
 impl Drop for OpenCC {
@@ -137,5 +156,10 @@ mod tests {
         cc.close();
         assert_eq!(true, cc.convert("開放中文轉換").is_none());
         assert_eq!(true, cc.is_closed());
+    }
+
+    #[test]
+    fn test_opencc_last_error() {
+        println!("{}", OpenCC::last_error().unwrap());
     }
 }
