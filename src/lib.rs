@@ -30,6 +30,7 @@
 extern crate libc;
 use libc::{size_t, c_void, c_char};
 
+use std::cell::Cell;
 use std::ffi::CStr;
 use std::str;
 
@@ -45,7 +46,7 @@ extern {
 pub struct OpenCC {
     /// Configuration file
     pub config: String,
-    _is_closed: bool,
+    _is_closed: Cell<bool>,
     libopencc: *mut c_void,
 }
 
@@ -62,7 +63,7 @@ impl OpenCC {
         unsafe {
             OpenCC {
                 config: _config,
-                _is_closed: false,
+                _is_closed: Cell::new(false),
                 libopencc: opencc_open(config_ptr as *const c_char),
             }
         }
@@ -77,7 +78,7 @@ impl OpenCC {
     /// cc.convert("開放中文轉換").unwrap();
     /// ```
     pub fn convert(&self, text: &str) -> Option<String> {
-        if self._is_closed {
+        if self._is_closed.get() {
             None
         } else {
             unsafe {
@@ -97,18 +98,18 @@ impl OpenCC {
 
     /// Close the underlying libopencc.
     /// Will be called automatically when the variable gets out of scope.
-    pub fn close(&mut self) {
-        if !self._is_closed {
+    pub fn close(&self) {
+        if !self._is_closed.get() {
             unsafe {
                 opencc_close(self.libopencc);
             }
-            self._is_closed = true;
+            self._is_closed.set(true);
         }
     }
 
     /// Is the underlying libopencc closed
     pub fn is_closed(&self) -> bool {
-        self._is_closed
+        self._is_closed.get()
     }
 
     /// Returns the last error message
@@ -150,7 +151,7 @@ mod tests {
 
     #[test]
     fn test_opencc_close() {
-        let mut cc = OpenCC::new("t2s.json");
+        let cc = OpenCC::new("t2s.json");
         assert_eq!("乾坤一掷".to_string(), cc.convert("乾坤一擲").unwrap());
         assert_eq!(false, cc.is_closed());
         cc.close();
