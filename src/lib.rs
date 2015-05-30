@@ -145,14 +145,14 @@ mod tests {
     #[test]
     fn test_simple_convert() {
         let cc = OpenCC::new("t2s.json");
-        assert_eq!("乾坤一掷".to_string(), cc.convert("乾坤一擲").unwrap());
-        assert_eq!("开放中文转换".to_string(), cc.convert("開放中文轉換").unwrap());
+        assert_eq!("乾坤一掷", &cc.convert("乾坤一擲").unwrap());
+        assert_eq!("开放中文转换", &cc.convert("開放中文轉換").unwrap());
     }
 
     #[test]
     fn test_opencc_close() {
         let cc = OpenCC::new("t2s.json");
-        assert_eq!("乾坤一掷".to_string(), cc.convert("乾坤一擲").unwrap());
+        assert_eq!("乾坤一掷", &cc.convert("乾坤一擲").unwrap());
         assert_eq!(false, cc.is_closed());
         cc.close();
         assert_eq!(true, cc.convert("開放中文轉換").is_none());
