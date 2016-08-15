@@ -1,6 +1,6 @@
 [package]
 name = "opencc"
-version = "0.2.1"
+version = "0.2.2"
 authors = ["messense <messense@icloud.com>"]
 description = "OpenCC binding for Rust"
 repository = "https://github.com/messense/opencc-rs"
@@ -13,7 +13,7 @@ license = "MIT"
 name = "opencc"
 
 [dependencies]
-libc = "*"
+libc = "0.2"
 
 [features]
 unstable = []
