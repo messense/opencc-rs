@@ -31,8 +31,7 @@ extern crate libc;
 use libc::{size_t, c_void, c_char};
 
 use std::cell::Cell;
-use std::ffi::CStr;
-use std::str;
+use std::ffi::{CStr, CString};
 
 #[link(name = "opencc")]
 extern {
@@ -58,13 +57,12 @@ impl OpenCC {
     /// let cc = opencc::OpenCC::new("t2s.json");
     /// ```
     pub fn new(config: &str) -> OpenCC {
-        let _config = config.to_string();
-        let config_ptr = _config.as_ptr();
+        let c_config = CString::new(config).unwrap();
         unsafe {
             OpenCC {
-                config: _config,
+                config: config.to_string(),
                 _is_closed: Cell::new(false),
-                libopencc: opencc_open(config_ptr as *const c_char),
+                libopencc: opencc_open(c_config.as_ptr()),
             }
         }
     }
@@ -82,13 +80,13 @@ impl OpenCC {
             None
         } else {
             unsafe {
-                let text_ptr = text.as_ptr();
-                let c_ptr = opencc_convert_utf8(self.libopencc, text_ptr as *const c_char, text.len() as size_t);
+                let c_text = CString::new(text).unwrap();
+                let c_ptr = opencc_convert_utf8(self.libopencc, c_text.as_ptr(), text.len() as size_t);
                 if c_ptr.is_null() {
                     None
                 } else {
                     let c_str = CStr::from_ptr(c_ptr);
-                    let str_buf: String = str::from_utf8(c_str.to_bytes()).unwrap().to_owned();
+                    let str_buf = c_str.to_str().unwrap().to_owned();
                     opencc_convert_utf8_free(c_ptr);
                     Some(str_buf)
                 }
@@ -124,7 +122,7 @@ impl OpenCC {
                 None
             } else {
                 let c_str = CStr::from_ptr(error_ptr);
-                let str_buf: String = str::from_utf8(c_str.to_bytes()).unwrap().to_owned();
+                let str_buf = c_str.to_str().unwrap().to_owned();
                 Some(str_buf)
             }
         }
