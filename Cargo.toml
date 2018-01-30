@@ -1,6 +1,6 @@
 [package]
 name = "opencc"
-version = "0.2.2"
+version = "0.2.3"
 authors = ["messense <messense@icloud.com>"]
 description = "OpenCC binding for Rust"
 repository = "https://github.com/messense/opencc-rs"
