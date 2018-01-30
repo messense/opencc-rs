@@ -6,7 +6,7 @@ rust:
   - nightly
 
 install:
-  - sudo apt-get --no-install-recommends install doxygen -y
+  - sudo apt-get --no-install-recommends install -y doxygen cmake
   - git clone https://github.com/BYVoid/OpenCC.git && cd OpenCC
   - make && sudo make install
   - sudo ldconfig
