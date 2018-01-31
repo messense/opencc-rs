@@ -121,6 +121,9 @@ impl Drop for OpenCC {
     }
 }
 
+unsafe impl Send for OpenCC {}
+unsafe impl Sync for OpenCC {}
+
 #[cfg(test)]
 mod tests {
     use super::OpenCC;
