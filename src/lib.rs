@@ -100,7 +100,7 @@ impl OpenCC {
     /// # Safety
     ///
     /// Note that this function is the only one which is NOT thread-safe.
-    pub fn last_error() -> Option<String> {
+    pub fn last_error(&mut self) -> Option<String> {
         unsafe {
             let error_ptr = opencc_error();
             if error_ptr.is_null() {
@@ -134,6 +134,7 @@ mod tests {
 
     #[test]
     fn test_opencc_last_error() {
-        println!("{}", OpenCC::last_error().unwrap());
+        let mut cc = OpenCC::new("t2s.json");
+        println!("{}", cc.last_error().unwrap());
     }
 }
